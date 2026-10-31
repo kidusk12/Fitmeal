@@ -1,45 +1,30 @@
-"""Phase 1 handlers: /start, role-based menus, and a read-only menu listing from the database."""
+"""Home menus (customer and staff) and small commands."""
 from __future__ import annotations
-
-import html
 
 from telegram import InlineKeyboardButton as Button
 from telegram import InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
-from telegram.error import BadRequest
 from telegram.ext import ContextTypes
 
-from .. import auth, db, texts
+from .. import auth, texts, ui
 from ..config import Config
 
+PATTERN = r"^(home|c:home|soon:\d+)$"
 
-def _cfg(context: ContextTypes.DEFAULT_TYPE) -> Config:
+
+def get_config(context: ContextTypes.DEFAULT_TYPE) -> Config:
     return context.application.bot_data["config"]
 
 
-async def _role(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
-    return await auth.get_role(update.effective_user.id, _cfg(context).owner_ids)
+async def get_role(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+    return await auth.get_role(update.effective_user.id, get_config(context).owner_ids)
 
-
-async def _remember_user(update: Update) -> None:
-    u = update.effective_user
-    await db.execute(
-        """
-        INSERT INTO users (tg_user_id, username, full_name) VALUES (%s, %s, %s)
-        ON CONFLICT (tg_user_id)
-        DO UPDATE SET username = EXCLUDED.username, full_name = EXCLUDED.full_name, updated_at = now()
-        """,
-        (u.id, u.username, u.full_name),
-    )
-
-
-# ---------- menus ----------
 
 def customer_menu(role: str) -> tuple[str, InlineKeyboardMarkup]:
     rows = [
-        [Button("🍽 Browse menu", callback_data="c:menu")],
-        [Button("🛒 My cart", callback_data="soon:2"), Button("📦 My orders", callback_data="soon:3")],
-        [Button("👤 Profile", callback_data="soon:2")],
+        [Button("🍽 Browse menu", callback_data="browse")],
+        [Button("🛒 My cart", callback_data="cart"), Button("📦 My orders", callback_data="orders")],
+        [Button("👤 Profile", callback_data="profile")],
     ]
     if auth.is_staff(role):
         rows.append([Button("↩️ Back to staff menu", callback_data="home")])
@@ -61,52 +46,16 @@ def home_for(role: str) -> tuple[str, InlineKeyboardMarkup]:
     return staff_menu(role) if auth.is_staff(role) else customer_menu(role)
 
 
-async def _menu_listing() -> str:
-    rows = await db.fetch_all(
-        """
-        SELECT c.name AS category, m.meal_code, m.name, m.price_etb,
-               m.calories, m.protein_g, m.carbs_g, m.fat_g
-        FROM meals m JOIN categories c ON c.id = m.category_id
-        WHERE m.is_active
-        ORDER BY c.sort_order, m.name
-        """
-    )
-    if not rows:
-        return texts.MENU_EMPTY
-    lines = [texts.MENU_HEADER]
-    current = None
-    for r in rows:
-        if r["category"] != current:
-            current = r["category"]
-            lines.append(f"\n<b>{html.escape(current)}</b>")
-        lines.append(
-            f"{html.escape(r['meal_code'])} · {html.escape(r['name'])} — {r['price_etb']} ETB\n"
-            f"   {r['calories']} kcal · P {r['protein_g']:g}g · C {r['carbs_g']:g}g · F {r['fat_g']:g}g"
-        )
-    return "\n".join(lines)
-
-
-# ---------- commands ----------
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await _remember_user(update)
-    role = await _role(update, context)
-    text, markup = home_for(role)
-    await update.effective_chat.send_message(text, parse_mode=ParseMode.HTML, reply_markup=markup)
-
-
 async def whoami(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    role = await _role(update, context)
+    role = await get_role(update, context)
     await update.effective_chat.send_message(f"Your Telegram ID: {update.effective_user.id}\nRole: {role}")
 
 
 async def customer_preview(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    role = await _role(update, context)
+    role = await get_role(update, context)
     text, markup = customer_menu(role)
     await update.effective_chat.send_message(text, parse_mode=ParseMode.HTML, reply_markup=markup)
 
-
-# ---------- buttons ----------
 
 async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
@@ -117,20 +66,6 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     await query.answer()
-    role = await _role(update, context)
-
-    if data == "home":
-        text, markup = home_for(role)
-    elif data == "c:home":
-        text, markup = customer_menu(role)
-    elif data == "c:menu":
-        text = await _menu_listing()
-        markup = InlineKeyboardMarkup([[Button("⬅️ Back", callback_data="c:home")]])
-    else:
-        return
-
-    try:
-        await query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=markup)
-    except BadRequest as exc:
-        if "not modified" not in str(exc).lower():
-            raise
+    role = await get_role(update, context)
+    text, markup = home_for(role) if data == "home" else customer_menu(role)
+    await ui.render(query, text, markup)

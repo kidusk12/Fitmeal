@@ -1,7 +1,7 @@
 # FitMeal
 
 Telegram bot for ordering healthy meals for delivery, with manual payment verification by the kitchen.
-Requirements: see the SRS document. Status: **Phase 1 (foundation)**.
+Requirements: see the SRS document. Status: **Phase 2 (customer basics)**.
 
 ## Setup (Windows PowerShell)
 
@@ -32,7 +32,9 @@ python -m bot.main
 - `bot/db.py`: PostgreSQL connection pool
 - `bot/auth.py`: owner / kitchen / customer roles
 - `bot/texts.py`: every message the bot sends
-- `bot/handlers/`: one file per feature area
+- `bot/handlers/`: one file per feature area (start, signup, browse, cart, orders)
+- `bot/services/`: logic without Telegram code (cart, users, phone, allergy matching)
+- `tests/`: run with `python -m unittest discover -s tests -v`
 - `legacy/Fitmeal.py`: the original 2-year-old bot, kept for reference only
 
 Never commit `.env`. It holds the bot token and database password.
