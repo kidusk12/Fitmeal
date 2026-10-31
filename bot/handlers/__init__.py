@@ -1,6 +1,6 @@
-from telegram.ext import Application, CallbackQueryHandler, CommandHandler
+from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 
-from . import browse, cart, checkout, orders, signup, start
+from . import browse, cart, checkout, orders, payment, signup, start
 
 
 def register(app: Application) -> None:
@@ -25,3 +25,9 @@ def register(app: Application) -> None:
     app.add_handler(CallbackQueryHandler(orders.on_callback, pattern=orders.PATTERN))
     app.add_handler(CallbackQueryHandler(checkout.on_callback, pattern=checkout.PATTERN))
     app.add_handler(CallbackQueryHandler(signup.on_profile, pattern=r"^profile$"))
+    app.add_handler(CallbackQueryHandler(payment.on_callback, pattern=payment.PATTERN))
+    # A photo (or image file) sent to the bot is treated as a payment screenshot.
+    app.add_handler(MessageHandler(filters.PHOTO | filters.Document.IMAGE, payment.on_screenshot))
+
+    # Payment timers: expiry and kitchen reminders, all driven by database timestamps.
+    app.job_queue.run_repeating(payment.tick, interval=payment.TICK_SECONDS, first=5, name="payment_timers")

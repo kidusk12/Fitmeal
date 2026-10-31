@@ -38,3 +38,13 @@ def day_bounds(now: datetime) -> tuple[datetime, datetime]:
 def order_code(day: date, number: int) -> str:
     """FIT-YYMMDD-NNN, for example FIT-261030-007."""
     return f"FIT-{day:%y%m%d}-{number:03d}"
+
+
+def alert_kind(elapsed_minutes: float, review_minutes: int) -> str:
+    """'reminder' while the kitchen is still inside its review window, 'overdue' once it is over (FR-P4)."""
+    return "overdue" if elapsed_minutes >= review_minutes else "reminder"
+
+
+def clock(moment: datetime, tz) -> str:
+    """Time of day in the shop's timezone, e.g. '14:32'."""
+    return moment.astimezone(tz).strftime("%H:%M")

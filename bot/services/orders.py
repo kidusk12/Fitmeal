@@ -9,7 +9,7 @@ from . import cart, rules
 
 DEFAULT_OPEN = time(8, 0)
 DEFAULT_CLOSE = time(21, 0)
-OPEN_STATUSES_FOR_CANCEL = ("awaiting_payment",)  # Phase 4 extends this to payment_review
+OPEN_STATUSES_FOR_CANCEL = ("awaiting_payment", "payment_review")  # until payment is approved (FR-O7)
 
 
 class OrderRefused(Exception):
@@ -82,6 +82,7 @@ async def place_order(
 
     fee = await db.get_setting_int("delivery_fee_etb", 50)
     limit = await db.get_setting_int("daily_order_limit", 100)
+    window = await db.get_setting_int("payment_window_min", 10)
     now = datetime.now(tz)
     today = now.date()
     day_start, day_end = rules.day_bounds(now)
@@ -138,14 +139,14 @@ async def place_order(
             INSERT INTO orders (
                 order_code, customer_id, subtotal_etb, delivery_fee_etb, total_etb,
                 dest_latitude, dest_longitude, dest_text, dest_maps_url,
-                receiver_name, receiver_phone
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING id, order_code, status, total_etb
+                receiver_name, receiver_phone, payment_requested_at, payment_deadline_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now(), now() + make_interval(mins => %s::int))
+            RETURNING id, order_code, status, total_etb, payment_deadline_at
             """,
             (
                 code, user_id, subtotal, fee, total,
                 dest.get("lat"), dest.get("lng"), dest.get("text"), dest.get("maps_url"),
-                receiver["name"], receiver["phone"],
+                receiver["name"], receiver["phone"], window,
             ),
         )
         order = await cur.fetchone()
@@ -182,29 +183,45 @@ async def order_lines(order_id: int) -> list[dict]:
     )
 
 
-async def cancel_order(order_id: int, user_id: int, tg_user_id: int) -> str | None:
-    """Cancel the customer's own order while payment is not approved (FR-O7).
+async def cancel_order(order_id: int, user_id: int, tg_user_id: int) -> tuple[str, str] | None:
+    """Cancel the customer's own order until its payment is approved (FR-O7).
 
-    Returns the Order ID, or None if the order could not be cancelled (wrong owner or
-    already past the point where the customer can cancel).
+    Returns (Order ID, new status), or None if it cannot be cancelled. If the customer had
+    already sent a payment screenshot the order goes to Refund Needed so the kitchen pays
+    the money back; otherwise it is simply Cancelled.
     """
     async with db.transaction() as conn:
         cur = await conn.execute(
             """
-            UPDATE orders SET status = 'cancelled', cancel_reason = 'Cancelled by customer', updated_at = now()
+            SELECT order_code, status FROM orders
             WHERE id = %s AND customer_id = %s AND status = ANY(%s)
-            RETURNING order_code
+            FOR UPDATE
             """,
             (order_id, user_id, list(OPEN_STATUSES_FOR_CANCEL)),
         )
         row = await cur.fetchone()
         if row is None:
             return None
+        paid = row["status"] == "payment_review"
+        new_status = "refund_needed" if paid else "cancelled"
+        reason = "Cancelled by customer after sending payment" if paid else "Cancelled by customer"
+        await conn.execute(
+            "UPDATE orders SET status = %s, cancel_reason = %s, updated_at = now() WHERE id = %s",
+            (new_status, reason, order_id),
+        )
         await conn.execute(
             """
             INSERT INTO order_events (order_id, status, actor_type, actor_tg_id, note)
-            VALUES (%s, 'cancelled', 'customer', %s, 'Cancelled by customer')
+            VALUES (%s, 'cancelled', 'customer', %s, %s)
             """,
-            (order_id, tg_user_id),
+            (order_id, tg_user_id, reason),
         )
-    return row["order_code"]
+        if paid:
+            await conn.execute(
+                """
+                INSERT INTO order_events (order_id, status, actor_type, actor_tg_id, note)
+                VALUES (%s, 'refund_needed', 'customer', %s, 'Paid order cancelled: refund needed')
+                """,
+                (order_id, tg_user_id),
+            )
+    return row["order_code"], new_status

@@ -125,9 +125,68 @@ ORDER_PLACED = (
     "Order ID: <b>{code}</b>\n\n"
     "{lines}\n\n"
     "Total: <b>{total} ETB</b>\n\n"
-    "Next step is payment. Payment details and screenshot upload arrive in Phase 4. "
-    "Until then the order stays <i>Awaiting payment</i> and you can cancel it."
+    "{payment}"
 )
 CANCEL_ASK = "Cancel order <b>{code}</b>?"
 ORDER_CANCELLED = "Order <b>{code}</b> has been cancelled."
 CANNOT_CANCEL = "This order can no longer be cancelled here. Please contact the kitchen."
+
+# ---- payment and tracking (Phase 4) ----
+PAYMENT_BLOCK = (
+    "💳 <b>Pay {total} ETB</b> to one of these accounts:\n\n{accounts}\n\n"
+    "Then send a <b>screenshot of your payment</b> in this chat before <b>{deadline}</b> "
+    "({minutes} minutes from now). If we don't receive it in time, the order expires."
+)
+PAYMENT_NO_ACCOUNTS = "⚠️ Payment details are not set up yet. Please contact the kitchen."
+SHOT_NO_ORDER = "I don't see an order waiting for payment. Open <b>My orders</b> to check your orders."
+SHOT_ALREADY = "We already have your screenshot and the kitchen is checking it. You'll get a message when it's done."
+SHOT_PICK = "Which order is this payment for?"
+SHOT_LOST = "Please send the screenshot again."
+SHOT_TOO_LATE = "Sorry, that order is no longer waiting for payment."
+SHOT_RECEIVED = (
+    "✅ Screenshot received for <b>{code}</b>.\n"
+    "The kitchen is checking your payment. You'll get a message as soon as it's done."
+)
+EXPIRED_MSG = (
+    "⏰ Order <b>{code}</b> expired because we didn't receive a payment screenshot in time.\n"
+    "You can place a new order any time."
+)
+STAFF_NEW_SHOT = (
+    "💳 <b>Payment to review</b>\n"
+    "Order <b>{code}</b> · {total} ETB\n"
+    "Customer: {name}, {phone}\n"
+    "<i>Approve and Deny buttons arrive in Phase 5.</i>"
+)
+STAFF_REMINDER = (
+    "⏳ <b>Payment review waiting</b>\n"
+    "Order <b>{code}</b> · {total} ETB\n"
+    "Customer: {name}, {phone}\n"
+    "Waiting {minutes} min."
+)
+STAFF_OVERDUE = (
+    "🚨 <b>OVERDUE payment review</b>\n"
+    "Order <b>{code}</b> · {total} ETB\n"
+    "Customer: {name}, {phone}\n"
+    "Waiting {minutes} min. Please approve or deny it now."
+)
+CUSTOMER_OVERDUE = (
+    "Your payment review for <b>{code}</b> is taking longer than expected. "
+    "We've alerted the kitchen.\n"
+    "If you would rather have your money back, tap <b>Request refund</b>."
+)
+REFUND_REQUESTED = "Refund requested for <b>{code}</b>. The kitchen will send your money back and confirm here."
+REFUND_TOO_EARLY = "The review is still within its normal time. Please wait a little."
+STAFF_REFUND = (
+    "💸 <b>Refund needed</b>\n"
+    "Order <b>{code}</b> · {total} ETB\n"
+    "Customer: {name}, {phone}\n"
+    "Reason: {reason}"
+)
+CANCEL_ASK_PAID = (
+    "Cancel order <b>{code}</b>?\n"
+    "You already sent a payment screenshot, so the kitchen will refund you manually."
+)
+ORDER_CANCELLED_REFUND = "Order <b>{code}</b> has been cancelled. The kitchen will refund your payment and confirm here."
+TRACK_HEADER = "📦 <b>Order {code}</b>\n"
+
+REFUND_ALREADY = "A refund is already on its way for this order. The kitchen will send your money back and confirm here."
