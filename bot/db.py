@@ -1,7 +1,8 @@
 """PostgreSQL access through an async connection pool (works locally and on Neon)."""
 from __future__ import annotations
 
-from typing import Any, Iterable
+from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator, Iterable
 
 from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
@@ -52,6 +53,21 @@ async def fetch_one(query: str, params: Iterable[Any] | None = None) -> dict | N
 async def execute(query: str, params: Iterable[Any] | None = None) -> None:
     async with _get_pool().connection() as conn:
         await conn.execute(query, params)
+
+
+@asynccontextmanager
+async def transaction() -> AsyncIterator[Any]:
+    """Several statements that succeed or fail together.
+
+        async with db.transaction() as conn:
+            cur = await conn.execute("...", params)
+            row = await cur.fetchone()
+
+    Leaving the block normally commits; an exception rolls everything back.
+    """
+    async with _get_pool().connection() as conn:
+        async with conn.transaction():
+            yield conn
 
 
 async def get_setting(key: str, default: str | None = None) -> str | None:

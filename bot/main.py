@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
+import warnings
 
 from telegram import Update
 from telegram.ext import Application, ApplicationBuilder, ContextTypes
@@ -17,6 +18,9 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 log = logging.getLogger("fitmeal")
+
+# PTB prints a harmless notice about inline buttons inside conversations; hide it.
+warnings.filterwarnings("ignore", message=r".*per_message.*")
 
 
 async def on_error(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
