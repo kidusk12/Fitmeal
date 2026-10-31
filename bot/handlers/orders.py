@@ -42,7 +42,10 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             lines.append(
                 "<b>" + html.escape(r["order_code"]) + "</b> · " + label + " · " + str(r["total_etb"]) + " ETB\n   " + when
             )
-            buttons.append([Button("🔁 Reorder " + r["order_code"], callback_data="reorder:" + str(r["id"]))])
+            row = [Button("🔁 Reorder " + r["order_code"], callback_data="reorder:" + str(r["id"]))]
+            if r["status"] == "awaiting_payment":
+                row.append(Button("❌ Cancel", callback_data="co:cancel:" + str(r["id"])))
+            buttons.append(row)
         buttons.append([Button("⬅️ Back", callback_data="c:home")])
         await ui.render(query, "\n".join(lines), InlineKeyboardMarkup(buttons))
 

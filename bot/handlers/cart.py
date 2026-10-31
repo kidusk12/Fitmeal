@@ -78,7 +78,7 @@ async def build_cart(user: dict, tz: ZoneInfo) -> tuple[str, InlineKeyboardMarku
     if show_legend:
         text += texts.CART_ALLERGY_LEGEND
     buttons.append([Button("🍽 Add more meals", callback_data="browse"), Button("🧹 Clear cart", callback_data="cart:clear")])
-    buttons.append([Button("✅ Checkout", callback_data="soon:3")])
+    buttons.append([Button("✅ Checkout", callback_data="checkout")])
     buttons.append([Button("⬅️ Back", callback_data="c:home")])
     return text, InlineKeyboardMarkup(buttons)
 

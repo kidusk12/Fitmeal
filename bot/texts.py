@@ -87,3 +87,47 @@ STATUS_LABELS = {
     "refund_needed": "Refund pending",
     "refunded": "Refunded",
 }
+
+# ---- checkout (Phase 3) ----
+CLOSED = (
+    "We're closed right now 🌙\n"
+    "Orders are taken from <b>{opens}</b> to <b>{closes}</b> (Addis Ababa time). Please come back then."
+)
+LIMIT_REACHED = "We've reached today's order limit 🙏 Please try again tomorrow."
+CHECKOUT_EMPTY = "Your cart is empty, so there is nothing to order."
+CHECKOUT_UNAVAILABLE = "These items are no longer available: {names}. Please remove them from your cart first."
+CHECKOUT_EXPIRED = "This checkout timed out. Open your cart and tap Checkout to start again."
+PRICE_CHANGED = "⚠️ The total changed while you were checking out. Please review it and confirm again."
+
+CHECKOUT_DEST = (
+    "<b>Checkout</b>\n\n{summary}\n\n"
+    "<b>Where should we deliver?</b>\n"
+    "Send a 📍 location pin (you can pick any place on the map), paste a Google Maps link, "
+    "or type an address or landmark. Or choose a saved address below."
+)
+ERR_MAPS_LINK = (
+    "I couldn't find a location in that link. Please send a 📍 pin from Telegram, "
+    "paste a Google Maps link that shows a pin, or type the address."
+)
+ERR_ADDRESS = "Please type an address or landmark (3 to 200 characters), or send a location pin."
+ASK_RECEIVER = "<b>Who will receive this order?</b>"
+ASK_RECEIVER_NAME = "What is the <b>receiver's name</b>?"
+ASK_RECEIVER_PHONE = "What is the <b>receiver's phone number</b>? For example 0911223344."
+ASK_ADDRESS_LABEL = "Give this address a short name, for example <b>Home</b> or <b>Office</b> (up to 30 characters)."
+ERR_ADDRESS_LABEL = "Please use 1 to 30 characters."
+ADDRESS_SAVED = "Address saved ✅"
+ADDRESS_LIMIT = "You can save up to {n} addresses."
+
+CONFIRM_HEADER = "<b>Please confirm your order</b>\n"
+CONFIRM_FOOTER = "\n<i>After you confirm, you'll get the payment details.</i>"
+ORDER_PLACED = (
+    "✅ <b>Order placed</b>\n"
+    "Order ID: <b>{code}</b>\n\n"
+    "{lines}\n\n"
+    "Total: <b>{total} ETB</b>\n\n"
+    "Next step is payment. Payment details and screenshot upload arrive in Phase 4. "
+    "Until then the order stays <i>Awaiting payment</i> and you can cancel it."
+)
+CANCEL_ASK = "Cancel order <b>{code}</b>?"
+ORDER_CANCELLED = "Order <b>{code}</b> has been cancelled."
+CANNOT_CANCEL = "This order can no longer be cancelled here. Please contact the kitchen."
