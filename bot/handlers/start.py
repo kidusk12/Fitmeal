@@ -33,8 +33,8 @@ def customer_menu(role: str) -> tuple[str, InlineKeyboardMarkup]:
 
 def staff_menu(role: str) -> tuple[str, InlineKeyboardMarkup]:
     rows = [
-        [Button("📋 Order queue", callback_data="soon:5")],
-        [Button("🍲 Meals", callback_data="soon:6")],
+        [Button("📋 Order queue", callback_data="k:dash")],
+        [Button("🍲 Sold out today", callback_data="k:meals")],
     ]
     if role == "owner":
         rows.append([Button("⚙️ Settings", callback_data="soon:6"), Button("👥 Staff", callback_data="soon:6")])

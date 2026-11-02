@@ -20,11 +20,12 @@ from telegram.ext import (
 )
 
 from .. import db, texts, ui
-from ..services import location, users
+from ..services import location, notify, payments, users
 from ..services import orders as order_service
 from ..services.orders import OrderRefused
 from ..services.phone import normalize_phone
 from . import cart as cart_screen
+from . import payment as payment_screen
 from . import start as home
 
 DEST, RECEIVER, RCV_NAME, RCV_PHONE, CONFIRM, LABEL = range(6)
@@ -422,12 +423,14 @@ async def place(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         if item["note"]:
             line += "\n   📝 " + html.escape(item["note"])
         lines.append(line)
+    payment_text = await payment_screen.payment_block(order["total_etb"], order["payment_deadline_at"], tz)
     text = texts.ORDER_PLACED.format(
-        code=html.escape(order["order_code"]), lines="\n".join(lines), total=order["total_etb"]
+        code=html.escape(order["order_code"]), lines="\n".join(lines), total=order["total_etb"], payment=payment_text
     )
     rows = [
+        [Button("🔎 Track order", callback_data=f"track:{order['id']}")],
         [Button("❌ Cancel this order", callback_data=f"co:cancel:{order['id']}")],
-        [Button("📦 My orders", callback_data="orders"), Button("🏠 Home", callback_data="c:home")],
+        [Button("🏠 Home", callback_data="c:home")],
     ]
     await ui.render(query, text, InlineKeyboardMarkup(rows))
     return ConversationHandler.END
@@ -455,16 +458,35 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     if action == "cancel":
+        ask = texts.CANCEL_ASK_PAID if order["status"] == "payment_review" else texts.CANCEL_ASK
         rows = [
             [Button("Yes, cancel it", callback_data=f"co:cancelyes:{order_id}")],
-            [Button("Keep my order", callback_data="orders")],
+            [Button("Keep my order", callback_data=f"track:{order_id}")],
         ]
-        await ui.render(query, texts.CANCEL_ASK.format(code=code), InlineKeyboardMarkup(rows))
+        await ui.render(query, ask.format(code=code), InlineKeyboardMarkup(rows))
         return
 
-    cancelled = await order_service.cancel_order(order_id, user["id"], update.effective_user.id)
-    text = texts.ORDER_CANCELLED.format(code=code) if cancelled else texts.CANNOT_CANCEL
-    await ui.render(query, text, to_orders)
+    result = await order_service.cancel_order(order_id, user["id"], update.effective_user.id)
+    if result is None:
+        await ui.render(query, texts.CANNOT_CANCEL, to_orders)
+        return
+    _, new_status = result
+    if new_status == "refund_needed":
+        await ui.render(query, texts.ORDER_CANCELLED_REFUND.format(code=code), to_orders)
+        info = await payments.order_contact(order_id)
+        await notify.send_staff(
+            context.bot,
+            home.get_config(context),
+            texts.STAFF_REFUND.format(
+                code=code,
+                total=info["total_etb"],
+                name=html.escape(info["full_name"] or "?"),
+                phone=html.escape(info["phone"] or "?"),
+                reason="customer cancelled after sending a payment screenshot",
+            ),
+        )
+    else:
+        await ui.render(query, texts.ORDER_CANCELLED.format(code=code), to_orders)
 
 
 # ---------- wiring ----------
