@@ -190,3 +190,62 @@ ORDER_CANCELLED_REFUND = "Order <b>{code}</b> has been cancelled. The kitchen wi
 TRACK_HEADER = "📦 <b>Order {code}</b>\n"
 
 REFUND_ALREADY = "A refund is already on its way for this order. The kitchen will send your money back and confirm here."
+# ---- kitchen console (Phase 5) ----
+STAFF_ONLY = "This is for kitchen staff only."
+ALREADY_HANDLED = "Someone already handled this order. Showing its current state."
+STAFF_SHOT_CAPTION = "💳 <b>Payment to review</b>\nOrder <b>{code}</b> · {total} ETB\nCustomer: {name}"
+STAFF_CANCEL_BTN = "✖️ Cancel"
+DASH_HEADER = "📋 <b>Kitchen dashboard</b>\n"
+DASH_BODY = (
+    "💳 Payment review: <b>{review}</b>\n"
+    "🚨 Overdue: <b>{overdue}</b>\n"
+    "🍳 To cook: <b>{cook}</b>\n"
+    "🛵 Out for delivery: <b>{delivery}</b>\n"
+    "💸 Refunds to send: <b>{refunds}</b>"
+)
+QUEUE_TITLES = {
+    "review": "💳 Payment review",
+    "overdue": "🚨 Overdue payment reviews",
+    "cook": "🍳 To cook",
+    "delivery": "🛵 Out for delivery",
+    "refunds": "💸 Refunds to send",
+}
+QUEUE_EMPTY = "Nothing here right now ✅"
+CARD_OVERDUE = "🚨 <b>OVERDUE</b>: the customer has waited {minutes} min"
+CUSTOMER_UNREACHED = "⚠️ I could not message the customer (they may have blocked the bot). Please call {phone}."
+NO_SCREENSHOT = "There is no payment screenshot for this order."
+NO_RECIPE = "(no recipe saved yet)"
+RECIPE_HEADER = "📖 <b>Recipes for {code}</b>\n"
+ASK_APPROVE_TIME = "When will <b>{code}</b> be delivered? Pick a time, or type one. The customer sees it right away."
+ASK_TYPED_TIME = "Type the delivery time as HH:MM (24-hour, Addis Ababa time), for example 17:30."
+ERR_TIME = "I couldn't read that, or the time has already passed. Use HH:MM, for example 17:30."
+ASK_DENY_REASON = "Why is this payment being denied? Type a short reason. The customer will read it."
+ASK_RESEND = "Should the customer be allowed to send a new screenshot?"
+ASK_CANCEL_REASON = "Why can't this order be delivered? Type a short reason. The customer will read it, and a refund will be needed."
+ERR_REASON = "Please type a reason of 3 to 200 characters."
+ASK_REFUND_METHOD = "How did you send the money back?"
+ASK_REFUND_REF = "Type the transaction ID or a short note, or send - to skip."
+KITCHEN_CANCELLED = "Cancelled."
+MEALS_HEADER = "🍲 <b>Sold out today</b>\nTap a meal to mark it sold out for today, or put it back on sale."
+
+CUST_APPROVED = (
+    "✅ <b>Payment confirmed</b> for order <b>{code}</b>.\n"
+    "🕒 Delivery time: about <b>{time}</b>\n"
+    "Status: Confirmed"
+)
+CUST_DENIED = "❌ We couldn't confirm your payment for order <b>{code}</b>.\nReason: {reason}\n\n{next_step}"
+DENIED_RESEND = "You can send a new screenshot here now."
+DENIED_FINAL = "If you think this is a mistake, please contact the kitchen."
+CUST_STATUS = {
+    "preparing": "👨‍🍳 Your order <b>{code}</b> is being prepared.",
+    "ready": "✅ Your order <b>{code}</b> is ready and waiting for the rider.",
+    "out_for_delivery": "🛵 Your order <b>{code}</b> is on its way!",
+    "delivered": "📦 Your order <b>{code}</b> was delivered. Enjoy your meal! 🥗",
+}
+CUST_KITCHEN_CANCELLED = (
+    "❌ Order <b>{code}</b> was cancelled by the kitchen.\n"
+    "Reason: {reason}\n"
+    "We will refund <b>{total} ETB</b> and confirm here."
+)
+CUST_REFUNDED = "💸 Refund sent for order <b>{code}</b>: <b>{total} ETB</b> via {method}{reference}."
+SHOT_PLEASE_PHOTO = "Please send a <b>screenshot (photo)</b> of your payment for {codes}."

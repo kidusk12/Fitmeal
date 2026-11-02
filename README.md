@@ -1,7 +1,7 @@
 # FitMeal
 
 Telegram bot for ordering healthy meals for delivery, with manual payment verification by the kitchen.
-Requirements: see the SRS document. Status: **Phase 2 (customer basics)**.
+Requirements: see the SRS document. Status: **Phase 5 (kitchen console)**: ordering, payment by screenshot, kitchen approval, status tracking, refunds.
 
 ## Setup (Windows PowerShell)
 
@@ -34,6 +34,7 @@ python -m bot.main
 - `bot/texts.py`: every message the bot sends
 - `bot/handlers/`: one file per feature area (start, signup, browse, cart, orders)
 - `bot/services/`: logic without Telegram code (cart, users, phone, allergy matching)
+- `bot/handlers/kitchen.py`, `bot/services/kitchen.py`, `bot/services/flow.py`: the kitchen console (dashboard, approve/deny, statuses, recipes, refunds, sold out)
 - `tests/`: run with `python -m unittest discover -s tests -v`
 - `legacy/Fitmeal.py`: the original 2-year-old bot, kept for reference only
 

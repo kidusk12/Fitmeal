@@ -14,6 +14,7 @@ from telegram.error import TelegramError
 from .. import db, texts, ui
 from ..services import notify, payments, rules, users
 from ..services import orders as order_service
+from . import kitchen as kitchen_screen
 from . import start as home
 
 log = logging.getLogger("fitmeal.payment")
@@ -209,18 +210,8 @@ async def _submit(update, context, user: dict, order_id: int, file_id: str, quer
         await ui.render(query, texts.SHOT_RECEIVED.format(code=code), markup)
     else:
         await update.effective_chat.send_message(texts.SHOT_RECEIVED.format(code=code), parse_mode="HTML", reply_markup=markup)
-    # Staff get the screenshot itself (Phase 5 adds Approve / Deny buttons to this message).
-    await notify.send_staff(
-        context.bot,
-        home.get_config(context),
-        texts.STAFF_NEW_SHOT.format(
-            code=code,
-            total=order["total_etb"],
-            name=html.escape(order["full_name"] or "?"),
-            phone=html.escape(order["phone"] or "?"),
-        ),
-        photo=file_id,
-    )
+    # Staff get the screenshot, then the full order card with Approve / Deny buttons (FR-K3, FR-K5).
+    await kitchen_screen.alert_new_payment(context, order_id, file_id)
 
 
 # ---------- timers ----------
@@ -260,6 +251,7 @@ async def _review_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
                 phone=html.escape(row["phone"] or "?"),
                 minutes=int(elapsed),
             ),
+            markup=InlineKeyboardMarkup([[Button("👁 Review now", callback_data=f"k:view:{row['id']}")]]),
         )
         if delivered == 0:
             await payments.release_alert(row["id"])  # nobody got it (network?): try again next tick
@@ -271,3 +263,13 @@ async def _review_alerts(context: ContextTypes.DEFAULT_TYPE) -> None:
             )
             if told:  # only record it once the customer really got it; otherwise the next alert retries
                 await payments.mark_overdue(row["id"])
+
+
+async def on_text_while_unpaid(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Text from a customer who owes a screenshot: remind them what to send. Otherwise stay quiet."""
+    user = await users.ensure_user(update)
+    options = await payments.candidates(user["id"])
+    if not options:
+        return
+    codes = ", ".join("<b>" + html.escape(o["order_code"]) + "</b>" for o in options)
+    await update.message.reply_text(texts.SHOT_PLEASE_PHOTO.format(codes=codes), parse_mode="HTML")
