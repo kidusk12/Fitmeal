@@ -249,3 +249,161 @@ CUST_KITCHEN_CANCELLED = (
 )
 CUST_REFUNDED = "💸 Refund sent for order <b>{code}</b>: <b>{total} ETB</b> via {method}{reference}."
 SHOT_PLEASE_PHOTO = "Please send a <b>screenshot (photo)</b> of your payment for {codes}."
+
+# ---- owner tools (Phase 6) ----
+OWNER_ONLY = "This is for the owner only."
+OWNER_CANCEL_BTN = "✖️ Cancel"
+OWNER_CANCELLED = "Cancelled. Nothing was changed."
+OWNER_STALE = "That step is no longer active. Open it again from the menu."
+OWNER_USE_BUTTONS = "Please tap one of the buttons above, or Cancel."
+OWNER_USE_TEXT = "Please type your answer as text, or tap Cancel."
+OWNER_MENU_BTN = "⬅️ Menu"
+ERR_PHOTO_FILE = "Please send it as a normal <b>photo</b> (not as a file)."
+
+SETTINGS_SCREEN = (
+    "⚙️ <b>Settings</b>\n\n"
+    "🚚 Delivery fee: <b>{fee} ETB</b>\n"
+    "📦 Daily order limit: <b>{limit}</b> orders\n"
+    "🕗 Opening hours: <b>{opens} to {closes}</b>\n"
+    "⏱ Customer payment window: <b>{window} min</b>\n"
+    "🔎 Kitchen review window: <b>{review} min</b>\n"
+    "🔔 Overdue alert repeat: <b>{repeat} min</b>\n\n"
+    "<i>Changes apply right away. Orders already placed keep the payment deadline they were given.</i>"
+)
+ASK_SETTING = "New value for <b>{label}</b>: type {hint}.\nCurrent value: <b>{current}</b>"
+ERR_SETTING = "That value doesn't work. Please type {hint}."
+SETTING_SAVED = "✅ <b>{label}</b> is now <b>{value}</b>."
+
+STAFF_SCREEN = (
+    "👥 <b>Staff</b>\n\n{people}\n\n"
+    "<i>Owners are set in the ADMIN_IDS line of the .env file. Kitchen staff are managed here.</i>"
+)
+STAFF_NONE = "No kitchen staff yet."
+ASK_STAFF_ID = (
+    "Type the new staff member's <b>Telegram ID</b> (numbers only).\n"
+    "They can get it by sending /whoami to this bot. They should also open the bot with /start so alerts can reach them."
+)
+ERR_STAFF_ID = "That doesn't look like a Telegram ID. Please type numbers only, for example 123456789."
+ASK_STAFF_NAME = "What name should I show for this person? (2 to 60 characters)"
+ERR_PERSON_NAME = "Please type 2 to 60 characters."
+STAFF_ADDED = "✅ <b>{name}</b> was added as kitchen staff."
+STAFF_REACTIVATED = "✅ <b>{name}</b> is kitchen staff again."
+STAFF_EXISTS = "That person is already on the staff list."
+STAFF_IS_OWNER = "That ID belongs to an owner. Owners cannot be changed here."
+STAFF_WELCOME = "👋 You were added to the <b>FitMeal</b> kitchen team. Send /start to open the kitchen menu."
+STAFF_NOT_NOTIFIED = "⚠️ I couldn't message them. They need to open the bot and press /start first."
+STAFF_REMOVE_ASK = "Remove <b>{name}</b> from the kitchen team? They will stop getting alerts and lose access to the kitchen tools."
+STAFF_REMOVED = "✅ <b>{name}</b> was removed."
+STAFF_REMOVE_FAILED = "That person is not active kitchen staff, so nothing changed."
+
+ACCOUNTS_SCREEN = "💳 <b>Payment accounts</b>\nCustomers see the visible accounts when they pay.\n\n{accounts}"
+ACCOUNTS_NONE = "No accounts yet."
+ACCOUNT_VIEW = "💳 <b>{label}</b>\nNumber: <code>{number}</code>\nHolder: {holder}\nStatus: {status}"
+ASK_ACCT_LABEL = "What is the account called? For example <b>Telebirr</b> or <b>CBE</b>. (1 to 30 characters)"
+ASK_ACCT_NUMBER = "Type the <b>account number or phone number</b> customers will pay to. (3 to 40 characters)"
+ASK_ACCT_HOLDER = "Type the <b>account holder's name</b> exactly as the bank or Telebirr shows it. (2 to 60 characters)"
+ASK_ACCT_VALUE = "Type the new <b>{what}</b>. Current: {current}"
+ERR_ACCT_LABEL = "Please type 1 to 30 characters."
+ERR_ACCT_NUMBER = "Please type 3 to 40 characters."
+ACCT_SAVED = "✅ Payment account saved."
+ACCT_LAST = "At least one payment account must stay visible, or customers can't pay. Add another one first."
+ACCT_DELETE_ASK = "Delete the account <b>{label}</b> for good?"
+ACCT_DELETED = "✅ Account deleted."
+ACCT_GONE = "That account no longer exists."
+
+MEALS_SCREEN = "🍽 <b>Meals</b> ({total})\nTap a meal to edit it. Codes are made automatically."
+MEAL_VIEW = (
+    "🍽 <b>{code}</b> {name}\n"
+    "Category: {category} · Price: <b>{price} ETB</b>\n"
+    "{calories} kcal · Protein {protein} g · Carbs {carbs} g · Fat {fat} g\n"
+    "Status: {status}\n"
+    "Photo: {photo}\n\n"
+    "<b>Ingredients</b>\n{ingredients}\n\n"
+    "<b>Description</b>\n{description}\n\n"
+    "<b>Recipe</b> (kitchen only)\n{recipe}"
+)
+MEAL_STATUS_ON = "✅ On sale"
+MEAL_STATUS_HIDDEN = "🙈 Hidden from customers"
+MEAL_STATUS_SOLD_OUT = "❌ Sold out today"
+MEAL_EMPTY_FIELD = "(empty)"
+MEAL_GONE = "That meal no longer exists."
+ASK_MEAL_NAME = "What is the <b>meal's name</b>? (2 to 60 characters)"
+ASK_MEAL_CATEGORY = "Pick the <b>category</b>:"
+ASK_NEW_CATEGORY = "Type the name of the new category. (2 to 40 characters)"
+ERR_CATEGORY = "Please type 2 to 40 characters."
+ASK_MEAL_PRICE = "What is the <b>price</b> in ETB? Whole number, for example 180."
+ERR_MEAL_PRICE = "Please type the price as a whole number from 1 to 100000."
+ASK_MEAL_MACROS = (
+    "Type the <b>calories, protein, carbs and fat</b> in this order, separated by spaces.\n"
+    "Example: <code>420 28 55 10</code> means 420 kcal, 28 g protein, 55 g carbs, 10 g fat."
+)
+ERR_MEAL_MACROS = "I need four numbers: calories, protein, carbs, fat. For example 420 28 55 10."
+ASK_MEAL_DESCRIPTION = "Type a short <b>description</b> customers will read (up to 300 characters), or send - to leave it empty."
+ASK_MEAL_RECIPE = "Type the <b>recipe</b>. Only the kitchen sees it (up to 1000 characters). Send - to leave it empty."
+ERR_MEAL_DESCRIPTION = "Please type up to 300 characters, or send -."
+ERR_MEAL_RECIPE = "Please type up to 1000 characters, or send -."
+ASK_MEAL_PHOTO = "Send a <b>photo</b> of the meal."
+SKIP_PHOTO_BTN = "⏭ Skip photo"
+REMOVE_PHOTO_BTN = "🗑 Remove photo"
+ASK_MEAL_INGREDIENTS = (
+    "Type the <b>ingredients with amounts</b>, separated by commas.\n"
+    "Example: <code>Chicken breast 150, Brown rice 150, Olive oil 5ml, Egg 2</code>\n"
+    "Amounts are grams unless you add ml or pcs. This list replaces the old one."
+)
+ERR_ING = {
+    "empty": "Please type at least one ingredient with an amount.",
+    "format": "Each ingredient needs a name and an amount, like <code>Rice 150</code>. Please try again.",
+    "qty": "An amount is out of range. Use a number above 0.",
+    "name": "An ingredient name must be 2 to 40 characters and contain letters.",
+    "dup": "An ingredient appears twice. Please list each one once.",
+    "toomany": "That's too many ingredients (20 at most).",
+}
+ASK_ALLERGEN = (
+    "New ingredient: <b>{name}</b>\n"
+    "Does it contain one of these common allergens? This powers the allergy warning customers see."
+)
+MEAL_CONFIRM = (
+    "Please check the new meal:\n\n"
+    "<b>{name}</b> · {category} · <b>{price} ETB</b>\n"
+    "{calories} kcal · Protein {protein} g · Carbs {carbs} g · Fat {fat} g\n"
+    "Ingredients: {ingredients}\n"
+    "Photo: {photo}\n"
+    "Description: {description}\n"
+    "Recipe: {recipe}\n\n"
+    "A meal code is assigned when you save."
+)
+MEAL_ADDED = "✅ Added <b>{code}</b> {name}."
+MEAL_UPDATED = "✅ Meal updated. Customers see the change right away."
+MEAL_TOGGLED_HIDDEN = "🙈 The meal is now hidden from customers."
+MEAL_TOGGLED_SHOWN = "✅ The meal is on sale again."
+
+BC_ASK = (
+    "📣 <b>Broadcast</b>\n"
+    "Send the message customers should get: plain text, or a photo with a caption (up to 1000 characters).\n"
+    "<i>It is sent as plain text, without formatting.</i>"
+)
+ERR_BC_CONTENT = "Please send text or a photo, up to 1000 characters."
+BC_AUDIENCE = "Who should get it?"
+BC_ASK_PHONES = "Type the customers' phone numbers, separated by commas or new lines."
+ERR_BC_PHONES = "None of those numbers belong to a registered customer. Please check them and try again."
+BC_PHONES_MISSING = "⚠️ Not found: {numbers}"
+BC_CONFIRM = "This is how it will look. Send it to <b>{count}</b> customer(s)?"
+BC_EMPTY = "Nobody is in that group yet."
+BC_SENDING = "📣 Sending to {count} customer(s)... I'll tell you when it's done."
+BC_DONE = "📣 Broadcast finished: delivered to <b>{delivered}</b> of {total}.{failed}"
+BC_FAILED = "\n{failed} could not be reached (they may have blocked the bot)."
+
+REPORTS_SCREEN = "📊 <b>Reports</b>\nPick a period."
+REPORT_BODY = (
+    "📊 <b>{title}</b> · {dates}\n\n"
+    "Orders placed: <b>{placed}</b>\n"
+    "Confirmed: <b>{confirmed}</b> · Delivered: <b>{delivered}</b>\n"
+    "Revenue: <b>{revenue} ETB</b> (food {food} + delivery {fees})\n"
+    "Payments denied: <b>{denied}</b>\n"
+    "Refunded: <b>{refunded}</b> ({refunded_etb} ETB) · Waiting for refund: <b>{refund_waiting}</b>\n"
+    "Expired or cancelled before payment: <b>{closed_unpaid}</b>\n"
+    "Customers with a confirmed order: <b>{customers}</b>\n\n"
+    "<b>Top meals</b>\n{top}\n\n"
+    "<i>Revenue counts only confirmed orders that were not refunded. Orders belong to the day they were placed.</i>"
+)
+REPORT_NO_MEALS = "No confirmed orders yet."

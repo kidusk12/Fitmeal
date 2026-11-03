@@ -1,6 +1,6 @@
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 
-from . import browse, cart, checkout, kitchen, orders, payment, signup, start
+from . import browse, cart, checkout, kitchen, orders, owner, payment, signup, start
 
 
 def register(app: Application) -> None:
@@ -10,12 +10,14 @@ def register(app: Application) -> None:
     app.add_handler(CommandHandler("start", checkout.forget), group=-1)
 
     # Conversations first, so they see messages before the plain handlers do.
-    # The note conversation comes before signup so that /start can cancel a half-typed note.
+    # The note, owner and kitchen conversations come before signup so that /start can cancel a
+    # half-typed form (signup also answers /start, and the first handler to match wins).
     # Checkout comes last among them so that signup and notes always get the text they are waiting for.
     app.add_handler(cart.note_conversation())
+    app.add_handler(owner.conversation())
+    app.add_handler(kitchen.conversation())
     app.add_handler(signup.conversation())
     app.add_handler(checkout.conversation())
-    app.add_handler(kitchen.conversation())
 
     app.add_handler(CommandHandler("whoami", start.whoami))
     app.add_handler(CommandHandler("customer", start.customer_preview))
@@ -28,6 +30,7 @@ def register(app: Application) -> None:
     app.add_handler(CallbackQueryHandler(signup.on_profile, pattern=r"^profile$"))
     app.add_handler(CallbackQueryHandler(payment.on_callback, pattern=payment.PATTERN))
     app.add_handler(CallbackQueryHandler(kitchen.on_callback, pattern=kitchen.PATTERN))
+    app.add_handler(CallbackQueryHandler(owner.on_callback, pattern=owner.PATTERN))
     # A photo (or image file) sent to the bot is treated as a payment screenshot.
     app.add_handler(MessageHandler(filters.PHOTO | filters.Document.IMAGE, payment.on_screenshot))
     # Text from a customer who still owes a screenshot gets a gentle reminder (must stay last).

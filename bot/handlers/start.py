@@ -37,7 +37,9 @@ def staff_menu(role: str) -> tuple[str, InlineKeyboardMarkup]:
         [Button("🍲 Sold out today", callback_data="k:meals")],
     ]
     if role == "owner":
-        rows.append([Button("⚙️ Settings", callback_data="soon:6"), Button("👥 Staff", callback_data="soon:6")])
+        rows.append([Button("🍽 Meals", callback_data="o:ml:0"), Button("⚙️ Settings", callback_data="o:set")])
+        rows.append([Button("👥 Staff", callback_data="o:staff"), Button("💳 Payment accounts", callback_data="o:acct")])
+        rows.append([Button("📣 Broadcast", callback_data="o:bc"), Button("📊 Reports", callback_data="o:rep")])
     rows.append([Button("🛍 Preview customer menu", callback_data="c:home")])
     return texts.WELCOME_STAFF.format(role=role), InlineKeyboardMarkup(rows)
 
