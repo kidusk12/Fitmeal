@@ -23,6 +23,7 @@ async def get_role(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
 def customer_menu(role: str) -> tuple[str, InlineKeyboardMarkup]:
     rows = [
         [Button("🍽 Browse menu", callback_data="browse")],
+        [Button("🥗 Build my meal", callback_data="mb:start")],
         [Button("🛒 My cart", callback_data="cart"), Button("📦 My orders", callback_data="orders")],
         [Button("👤 Profile", callback_data="profile")],
     ]
