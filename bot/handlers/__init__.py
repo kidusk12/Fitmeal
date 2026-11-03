@@ -1,6 +1,7 @@
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 
 from . import browse, cart, checkout, kitchen, orders, owner, payment, signup, start
+from . import builder
 
 
 def register(app: Application) -> None:
@@ -24,6 +25,7 @@ def register(app: Application) -> None:
 
     app.add_handler(CallbackQueryHandler(start.on_callback, pattern=start.PATTERN))
     app.add_handler(CallbackQueryHandler(browse.on_callback, pattern=browse.PATTERN))
+    app.add_handler(CallbackQueryHandler(builder.on_callback, pattern=builder.PATTERN))
     app.add_handler(CallbackQueryHandler(cart.on_callback, pattern=cart.PATTERN))
     app.add_handler(CallbackQueryHandler(orders.on_callback, pattern=orders.PATTERN))
     app.add_handler(CallbackQueryHandler(checkout.on_callback, pattern=checkout.PATTERN))

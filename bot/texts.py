@@ -407,3 +407,22 @@ REPORT_BODY = (
     "<i>Revenue counts only confirmed orders that were not refunded. Orders belong to the day they were placed.</i>"
 )
 REPORT_NO_MEALS = "No confirmed orders yet."
+
+# ---- meal builder (Phase 7) ----
+BUILDER_PICK = "🥗 <b>Build my meal</b>\nTap the ingredients you'd like. I'll find the meals on our menu that match best.\n"
+BUILDER_PICKED = "<b>Picked ({n}):</b> {names}"
+BUILDER_NOTHING_PICKED = "Nothing picked yet."
+BUILDER_PAGE = "Page {page} of {pages}"
+BUILDER_EMPTY = "There are no ingredients to pick from right now. Please check back soon."
+BUILDER_PICK_FIRST = "Pick at least one ingredient first."
+BUILDER_MAX = "You can pick up to {n} ingredients. Tap one you've picked to remove it."
+BUILDER_GONE = "That ingredient is no longer available. Showing the current list."
+BUILDER_NONE = "No meal on our menu contains those ingredients. Try picking different ones."
+BUILDER_RESULTS_HEADER = "🔎 <b>Closest meals</b> for: {names}"
+BUILDER_HAS_ALL = "   ✅ Has everything you picked"
+BUILDER_HAS_SOME = "   ◐ Has {have} of your {total} picks"
+BUILDER_NOT_IN = "   ➖ Doesn't have: {names}"
+BUILDER_ALSO = "   ➕ Also has: {names}"
+BUILDER_ALLERGY = "   ⚠️ May match the allergies in your profile"
+BUILDER_SOLD_OUT = "   🚫 Sold out today"
+BUILDER_FOOTER = "Tap a meal to see its details and add it to your cart."
