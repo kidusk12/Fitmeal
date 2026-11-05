@@ -14,6 +14,7 @@ from telegram.ext import Application, ApplicationBuilder, ContextTypes
 from . import db
 from .config import load_config
 from .handlers import register
+from .handlers import ops
 
 if sys.platform == "win32":
     # psycopg's async mode does not work on Windows' default event loop
@@ -34,6 +35,7 @@ def build_app(cfg) -> Application:
         await db.open_pool(cfg.database_url)
         await db.ensure_owners(cfg.owner_ids)
         log.info("Database connected")
+        await ops.on_startup(app, cfg)
 
     async def post_shutdown(app: Application) -> None:
         await db.close_pool()
@@ -67,6 +69,7 @@ def main() -> None:
         format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
+    ops.add_file_logging()
 
     log.info("Starting FitMeal (polling)")
     delay = 5

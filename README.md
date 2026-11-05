@@ -39,3 +39,11 @@ python -m bot.main
 - `legacy/Fitmeal.py`: the original 2-year-old bot, kept for reference only
 
 Never commit `.env`. It holds the bot token and database password.
+
+## Operations (Phase 8)
+
+- `/status` (owner): uptime, database, timer, last backup, today's orders.
+- `/backup` (owner): makes a backup and sends it to you. A daily backup also runs at 03:00 (`BACKUP_TIME` in `.env`) and is sent to the owners. Files are kept in `backups/` (the last 14).
+- Restore: stop the bot, then `python -m bot.restore backups\<file>.sql` (try it on an empty scratch database first with `--url`).
+- Logs: `logs/fitmeal.log`. Backups hold customer data and are never committed.
+- Running it for real: see `DEPLOY.md`. Pilot day: see `PILOT.md`.

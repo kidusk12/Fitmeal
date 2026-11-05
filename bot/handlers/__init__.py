@@ -1,6 +1,7 @@
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler, filters
 
 from . import browse, cart, checkout, kitchen, orders, owner, payment, signup, start
+from . import ops
 from . import builder
 
 
@@ -39,4 +40,5 @@ def register(app: Application) -> None:
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, payment.on_text_while_unpaid))
 
     # Payment timers: expiry and kitchen reminders, all driven by database timestamps.
+    ops.register(app)
     app.job_queue.run_repeating(payment.tick, interval=payment.TICK_SECONDS, first=5, name="payment_timers")
